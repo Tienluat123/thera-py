@@ -7,3 +7,5 @@ transformers
 openai-whisper
 soundfile
 numpy
+python-dotenv
+groq
