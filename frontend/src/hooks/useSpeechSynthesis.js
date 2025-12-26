@@ -1,18 +1,30 @@
 /**
- * Custom hook for text-to-speech
+ * Custom hook for text-to-speech (Vietnamese forced)
  */
 export function useSpeechSynthesis() {
-  const speak = (text, lang = 'vi-VN') => {
+  const getVietnameseVoice = () => {
+    const voices = window.speechSynthesis.getVoices();
+
+    // Ưu tiên giọng vi-VN
+    return voices.find(
+      (v) => v.lang === 'vi-VN'
+    ) || voices.find(
+      (v) => v.lang.startsWith('vi')
+    );
+  };
+
+  const speak = (text) => {
     if (!window.speechSynthesis) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
+    utterance.lang = 'vi-VN';
 
-    const voices = window.speechSynthesis.getVoices();
-    const viVoice = voices.find((v) => v.lang.startsWith('vi'));
-    if (viVoice) utterance.voice = viVoice;
+    const viVoice = getVietnameseVoice();
+    if (viVoice) {
+      utterance.voice = viVoice;
+    }
 
-    window.speechSynthesis.cancel();
+    window.speechSynthesis.cancel(); // ngắt giọng cũ
     window.speechSynthesis.speak(utterance);
   };
 

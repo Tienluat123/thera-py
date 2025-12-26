@@ -3,31 +3,31 @@ import { Mic, MicOff, Send } from 'lucide-react';
 
 export function Controls({ isRecording, isProcessing, audioBlob, onStartRecording, onStopRecording, onSend }) {
   return (
-    <div className="mt-4 flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <button
         onClick={isRecording ? onStopRecording : onStartRecording}
         disabled={isProcessing}
-        className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl font-semibold transition-all border ${
+        className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-xl font-medium transition-all sm:hidden ${
           isRecording
-            ? 'bg-rose-500 text-white border-rose-400'
-            : 'bg-emerald-500 text-white border-emerald-400 hover:brightness-110'
+            ? 'bg-red-500 text-white'
+            : 'bg-gray-300 text-gray-800 hover:bg-gray-400'
         } ${isProcessing ? 'opacity-60 cursor-not-allowed' : ''}`}
       >
-        {isRecording ? <MicOff size={22} /> : <Mic size={22} />}
-        {isRecording ? 'Dừng ghi âm' : 'Nhấn để nói'}
+        {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
+        <span className="text-sm">{isRecording ? 'Dừng' : 'Nói'}</span>
       </button>
 
       <button
         onClick={onSend}
         disabled={isProcessing}
-        className={`px-5 py-3 rounded-2xl font-semibold flex items-center gap-2 border border-white/10 ${
+        className={`flex-1 sm:flex-none px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-all ${
           !isProcessing
-            ? 'bg-white/10 text-emerald-100 hover:bg-white/20'
-            : 'bg-white/5 text-slate-400 cursor-not-allowed'
+            ? 'bg-blue-500 text-white hover:bg-blue-600'
+            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
         }`}
       >
         <Send size={18} />
-        {isProcessing ? 'Đang xử lý...' : 'Gửi'}
+        <span className="hidden sm:inline">{isProcessing ? 'Đang xử lý...' : 'Gửi'}</span>
       </button>
     </div>
   );
