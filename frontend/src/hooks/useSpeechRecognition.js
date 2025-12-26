@@ -3,6 +3,9 @@ import { useRef, useEffect, useState } from 'react';
 /**
  * Custom hook for browser Speech Recognition (STT)
  */
+
+// eslint-disable-next-line import/prefer-default-export
+
 export function useSpeechRecognition() {
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);

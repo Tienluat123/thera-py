@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Header, ChatBox, Controls } from '../components';
 import { useAudioRecorder, useSpeechRecognition, useSpeechSynthesis } from '../hooks';
-import { detectEmotion, chatWithText } from '../api';
+import { chat } from '../api';
 
 export function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -41,12 +41,11 @@ export function ChatPage() {
   };
 
   const handleSend = async () => {
-    // 1️⃣ Nếu đang ghi âm → dừng trước
+    // 1️⃣ Stop recording if still recording
     let currentBlob = audioBlob;
     if (audioRecorder.isRecording) {
       speechRecognition.stop();
       currentBlob = audioRecorder.stopRecording();
-      // Chờ tí để STT capture final text
       await new Promise((res) => setTimeout(res, 300));
     }
 
@@ -67,21 +66,20 @@ export function ChatPage() {
     setMicError('');
 
     try {
-      // 3️⃣ Detect emotion
-      const emotionResult = await detectEmotion(currentBlob);
-      setCurrentEmotion(emotionResult.emotion);
-
-      // 4️⃣ Get chat response
-      const chatResult = await chatWithText(finalText, emotionResult.emotion);
+      // SINGLE REQUEST: Send audio + text to backend
+      const chatResult = await chat(currentBlob, finalText);
 
       const timestamp = new Date().toLocaleTimeString('vi-VN');
 
-      // 5️⃣ Add messages
+      // Update emotion from response
+      setCurrentEmotion(chatResult.emotion);
+
+      // ➕ Add messages to chat
       const userMessage = {
         id: Date.now(),
         type: 'user',
-        text: finalText,
-        emotion: emotionResult.emotion,
+        text: chatResult.user_text,
+        emotion: chatResult.emotion,
         timestamp,
       };
 
@@ -94,10 +92,10 @@ export function ChatPage() {
 
       setMessages((prev) => [...prev, userMessage, botMessage]);
 
-      // 6️⃣ Speak bot response
+      // 🔊 Frontend TTS: Speak bot response
       speechSynthesis.speak(chatResult.reply_text);
 
-      // 7️⃣ Reset
+      // 🔄 Reset
       setAudioBlob(null);
       speechRecognition.reset();
     } catch (error) {

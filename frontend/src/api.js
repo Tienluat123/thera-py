@@ -10,46 +10,17 @@ const apiClient = axios.create({
 });
 
 /**
- * Detect emotion from audio
+ * Main chat endpoint - Single request
+ * Sends audio + text, backend returns reply + emotion
+ * 
  * @param {Blob} audioBlob - Audio file blob
- * @returns {Promise} - { emotion, confidence }
+ * @param {string} text - User's transcribed text (from frontend STT)
+ * @returns {Promise} - { user_text, reply_text, emotion, confidence }
  */
-export async function detectEmotion(audioBlob) {
+export async function chat(audioBlob, text) {
   const formData = new FormData();
   formData.append('file', audioBlob, 'audio.wav');
-
-  const response = await apiClient.post('/emotion', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  return response.data;
-}
-
-/**
- * Get chat response with text and emotion
- * @param {string} text - User text
- * @param {string} emotion - Detected emotion
- * @returns {Promise} - { reply_text, audio_url }
- */
-export async function chatWithText(text, emotion) {
-  const response = await apiClient.post('/chat-text', {
-    text,
-    emotion,
-  });
-
-  return response.data;
-}
-
-/**
- * Get chat response with audio
- * @param {Blob} audioBlob - Audio file blob
- * @returns {Promise} - { user_text, reply_text, audio_url, emotion }
- */
-export async function chatWithAudio(audioBlob) {
-  const formData = new FormData();
-  formData.append('file', audioBlob, 'audio.wav');
+  formData.append('text', text);
 
   const response = await apiClient.post('/chat', formData, {
     headers: {
@@ -61,3 +32,5 @@ export async function chatWithAudio(audioBlob) {
 }
 
 export default apiClient;
+
+

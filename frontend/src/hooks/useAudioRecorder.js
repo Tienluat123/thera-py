@@ -30,28 +30,35 @@ export function useAudioRecorder() {
     try {
       audioBufferRef.current = [];
 
+      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
+      // Setup AudioContext and nodes
       const audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.SAMPLE_RATE });
       audioContextRef.current = audioContext;
 
+      // Create media stream source
       const input = audioContext.createMediaStreamSource(stream);
       inputRef.current = input;
 
+      // Create script processor for audio data capture
       const processor = audioContext.createScriptProcessor(AUDIO_CONFIG.CHUNK_SIZE, 1, 1);
       processorRef.current = processor;
 
+      // Create analyser for level metering (đo đạt vẽ biểu đồ mức âm thanh)
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 512;
       analyserRef.current = analyser;
       dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
       input.connect(analyser);
 
+      // Capture audio data
       processor.onaudioprocess = (e) => {
         audioBufferRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
       };
 
+      // Connect nodes
       input.connect(processor);
       processor.connect(audioContext.destination);
 
@@ -63,6 +70,8 @@ export function useAudioRecorder() {
       throw new Error('Không thể truy cập microphone: ' + err.message);
     }
   }, [updateLevel]);
+
+  
 
   const stopRecording = useCallback(() => {
     if (!isRecording) return null;
