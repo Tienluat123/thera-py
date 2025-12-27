@@ -129,7 +129,9 @@ export const VisualizePage = () => {
     <div className="flex h-screen w-full bg-[#fdfcfd] overflow-hidden">
       {/* Sidebar bên trái */}
       <aside className="w-64 border-r border-gray-100 flex flex-col justify-between p-10 z-10 bg-white/50 backdrop-blur-md shrink-0">
-        <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>Thera.py</h1>
+        <Link
+          to="/chat"
+         className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>Thera.py</Link>
         <Link 
           to="/visualize" 
           className="text-gray-600 text-lg leading-relaxed hover:underline"
