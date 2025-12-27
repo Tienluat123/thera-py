@@ -25,11 +25,14 @@ export function Register() {
         "Đăng ký thành công, vui lòng kiểm tra email xác nhận (nếu có)."
       );
       // Optional: auto-login
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (signInError) throw signInError;
+      // Save access token for API calls
+      const token = data?.session?.access_token;
+      if (token) localStorage.setItem('auth_token', token);
       navigate("/chat");
     } catch (err) {
       setError(err.message || "Đăng ký thất bại");

@@ -3,14 +3,15 @@ API routes for the chatbot application.
 """
 
 import logging
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Header
+from datetime import date, datetime
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Header, Query
 from app.config import settings
 from app.models import ChatResponse
 from app.services import (
     emotion_service,
     chatbot_service,
 )
-from app.services.chat_history import save_message, get_recent_messages
+from app.services.chat_history import save_message, get_recent_messages, get_emotion_stats_by_date
 from app.services.auth import get_user_id_from_token
 
 logger = logging.getLogger(__name__)
@@ -127,4 +128,42 @@ async def chat(
         raise
     except Exception as e:
         logger.error(f"Chat endpoint error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/emotion-stats")
+async def get_emotion_stats(
+    date_param: str = Query(..., description="Date in format YYYY-MM-DD"),
+    authorization: str = Header(default=None),
+):
+    """
+    Get emotion statistics for a specific date.
+    
+    Returns: {"happy": int, "neutral": int, "sad": int, "angry": int}
+    """
+    try:
+        # Get user_id from token
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Authorization header required")
+        
+        try:
+            user_id = get_user_id_from_token(authorization)
+        except Exception as auth_err:
+            logger.warning(f"Auth failed: {auth_err}")
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # Validate date format
+        try:
+            datetime.strptime(date_param, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format, use YYYY-MM-DD")
+        
+        # Get emotion stats
+        stats = get_emotion_stats_by_date(user_id, date_param)
+        
+        return stats
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Emotion stats endpoint error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")

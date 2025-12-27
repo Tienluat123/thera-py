@@ -2,7 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChatBox, Controls } from '../components';
 import { useAudioRecorder, useSpeechRecognition, useSpeechSynthesis } from '../hooks';
 import { chat } from '../api';
+import { supabase } from '../lib/supabaseClient';
 import { EMOTION_CONFIG } from '../config';
+import { Link } from 'react-router-dom';
+
 
 export function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -55,7 +58,14 @@ export function ChatPage() {
     setMicError('');
 
     try {
-      const chatResult = await chat(currentBlob, finalText);
+      // get token from localStorage or supabase session
+      let token = localStorage.getItem('auth_token');
+      if (!token) {
+        const { data } = await supabase.auth.getSession();
+        token = data?.session?.access_token || null;
+      }
+
+      const chatResult = await chat(currentBlob, finalText, token);
       const timestamp = new Date().toLocaleTimeString('vi-VN');
 
       setCurrentEmotion(chatResult.emotion);
@@ -85,7 +95,12 @@ export function ChatPage() {
       {/* Sidebar bên trái - Giữ nguyên */}
       <aside className="w-64 border-r border-gray-100 flex flex-col justify-between p-10 z-10 bg-white/50 backdrop-blur-md shrink-0">
         <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>Thera.py</h1>
-        <div className="text-gray-600 text-lg leading-relaxed">Visualize your mood</div>
+        <Link
+          to="/visualize"
+          className="text-gray-600 text-lg leading-relaxed"
+        >
+          Visualize your mood
+        </Link>
       </aside>
 
       {/* Vùng nội dung chính */}

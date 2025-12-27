@@ -9,7 +9,12 @@ export function Home() {
         <div>
           <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>Thera.py</h1>
         </div>
-        
+        <Link 
+          to="/visualize" 
+          className="text-gray-600 text-lg leading-relaxed hover:underline"
+        >
+          Visualize your mood
+        </Link>
       </aside>
 
       {/* Vùng nội dung chính */}
