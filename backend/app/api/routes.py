@@ -3,12 +3,11 @@ API routes for the chatbot application.
 """
 
 import logging
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from app.config import settings
 from app.models import ChatResponse
 from app.services import (
     emotion_service,
-    stt_service,
     chatbot_service,
 )
 
@@ -17,7 +16,7 @@ router = APIRouter()
 
 
 def _validate_audio_file(file: UploadFile) -> None:
-    """Validate audio file."""
+    """Validate audio filev"""
     # Check file size
     if file.size and file.size > settings.MAX_AUDIO_SIZE:
         raise HTTPException(
@@ -25,29 +24,27 @@ def _validate_audio_file(file: UploadFile) -> None:
             detail=f"File quá lớn (max {settings.MAX_AUDIO_SIZE / (1024*1024):.0f}MB)",
         )
 
-    # Check content type
-    allowed_types = ["audio/wav", "audio/mpeg", "audio/mp3", "audio/x-wav"]
-    if file.content_type not in allowed_types:
+    # Check content type - WAV only
+    if file.content_type not in ["audio/wav", "audio/x-wav"]:
         raise HTTPException(
-            status_code=400, detail=f"Định dạng file không hỗ trợ (cho phép: WAV, MP3)"
+            status_code=400, detail="Chỉ hỗ trợ định dạng WAV"
         )
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat(file: UploadFile = File(...), text: str = None):
+async def chat(file: UploadFile = File(...), text: str = Form(None)):
     """
     Main chat endpoint - Single request handling.
 
     Processes audio for emotion detection and combines with user text for LLM.
-    Frontend handles TTS separately.
+    Frontend handles STT & TTS separately (browser APIs).
 
     Args:
         file: Audio file (WAV/MP3) for emotion detection
-        text: User's transcribed text (from frontend STT)
+        text: User's transcribed text (from frontend STT) - REQUIRED
 
     Returns:
         ChatResponse with user text, reply, emotion, and confidence
-        (NO audio_url - frontend does TTS)
     """
     try:
         # Validate
@@ -58,10 +55,10 @@ async def chat(file: UploadFile = File(...), text: str = None):
         if not audio_bytes:
             raise HTTPException(400, "Audio file is empty")
 
-        # Use frontend text or fallback to STT
-        user_text = (text or "").strip() or stt_service.transcribe(audio_bytes)
+        # Require text from frontend (no backend STT)
+        user_text = (text or "").strip()
         if not user_text:
-            raise HTTPException(400, "Không nhận được lời nói. Vui lòng thử lại.")
+            raise HTTPException(400, "Thiếu 'text' từ frontend STT")
 
         logger.info(
             f"Processing chat: text_len={len(user_text)}, audio_size={len(audio_bytes)} bytes"
@@ -72,7 +69,7 @@ async def chat(file: UploadFile = File(...), text: str = None):
         emotion = emotion_result["emotion"]
         confidence = emotion_result["confidence"]
 
-        # Chat Response (no TTS on backend)
+        # Chat Response
         reply_text = chatbot_service.get_reply(user_text, emotion)
 
         logger.info(f"Chat completed: emotion={emotion}, confidence={confidence:.2f}")
@@ -82,7 +79,6 @@ async def chat(file: UploadFile = File(...), text: str = None):
             reply_text=reply_text,
             emotion=emotion,
             confidence=confidence,
-            audio_url=None,  # Frontend does TTS
         )
 
     except HTTPException:

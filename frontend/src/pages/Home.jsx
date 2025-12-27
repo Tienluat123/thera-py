@@ -1,51 +1,64 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, MessageSquare } from 'lucide-react';
 
 export function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-slate-50 flex items-center justify-center px-4">
-      <div className="max-w-2xl text-center space-y-8">
-        <div className="flex justify-center">
-          <div className="h-20 w-20 rounded-3xl bg-emerald-500/20 border border-emerald-300/30 flex items-center justify-center">
-            <Sparkles className="text-emerald-200" size={40} />
-          </div>
+    <div className="flex h-screen w-full bg-[#fdfcfd] overflow-hidden">
+      {/* Sidebar bên trái */}
+      <aside className="w-64 border-r border-gray-100 flex flex-col justify-between p-10 z-10 bg-white/50 backdrop-blur-md">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>Thera.py</h1>
+        </div>
+        
+      </aside>
+
+      {/* Vùng nội dung chính */}
+      <main className="relative flex-1 flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-50">
+        {/* Các đốm màu loang (Mesh Gradient Background) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-white/20 blur-[100px]" />
+          <div className="absolute bottom-[-5%] left-[20%] w-[400px] h-[400px] rounded-full bg-white/10 blur-[120px]" />
         </div>
 
-        <h1 className="text-5xl font-bold">Thera Voice</h1>
-        <p className="text-xl text-slate-300">
-          Chatbot AI nhận diện cảm xúc bằng giọng nói
-        </p>
+        <div className="z-10 w-full max-w-3xl flex flex-col items-center text-center space-y-12">
+          {/* Title & Description */}
+          <div className="space-y-4">
+            <h2 className="text-5xl font-bold text-gray-800" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              Thera.py
+            </h2>
+            <p className="text-xl text-gray-700">
+              Chatbot AI nhận diện cảm xúc bằng giọng nói
+            </p>
+            <p className="text-sm text-gray-600">
+              Công nghệ STT/TTS + Emotion Detection + LLM
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          <p className="text-sm text-slate-400">
-            Công nghệ STT/TTS + Emotion Detection + LLM
-          </p>
+          {/* Feature Cards */}
+          <div className="grid grid-cols-3 gap-6 w-full max-w-2xl">
+            <div className="bg-white/70 rounded-3xl p-6 backdrop-blur-sm shadow-lg">
+              <p className="text-4xl mb-3">🎤</p>
+              <p className="text-sm font-medium text-gray-800">Nhận diện giọng nói</p>
+            </div>
+            <div className="bg-white/70 rounded-3xl p-6 backdrop-blur-sm shadow-lg">
+              <p className="text-4xl mb-3">😊</p>
+              <p className="text-sm font-medium text-gray-800">Phân tích cảm xúc</p>
+            </div>
+            <div className="bg-white/70 rounded-3xl p-6 backdrop-blur-sm shadow-lg">
+              <p className="text-4xl mb-3">💬</p>
+              <p className="text-sm font-medium text-gray-800">AI trả lời thông minh</p>
+            </div>
+          </div>
 
+          {/* CTA Button */}
           <Link
             to="/chat"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-emerald-500 text-white font-semibold hover:brightness-110 transition-all border border-emerald-400"
+            className="px-10 py-4 rounded-full bg-green-500 hover:bg-green-600 text-white font-semibold transition-all shadow-lg hover:shadow-xl"
           >
-            <MessageSquare size={20} />
             Bắt đầu trò chuyện
           </Link>
         </div>
-
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <p className="text-emerald-200 font-semibold">🎤</p>
-            <p className="text-xs mt-2">Nhận diện giọng nói</p>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <p className="text-amber-200 font-semibold">😊</p>
-            <p className="text-xs mt-2">Phân tích cảm xúc</p>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <p className="text-blue-200 font-semibold">💬</p>
-            <p className="text-xs mt-2">AI trả lời thông minh</p>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

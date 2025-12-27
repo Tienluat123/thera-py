@@ -4,7 +4,6 @@ uvicorn[standard]
 python-multipart
 
 # Audio Processing
-openai-whisper
 soundfile
 torchaudio
 
