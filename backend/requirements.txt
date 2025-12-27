@@ -1,11 +1,29 @@
+# Web Framework
 fastapi
-uvicorn
+uvicorn[standard]
 python-multipart
-torch
-torchaudio
-transformers
+
+# Audio Processing
 openai-whisper
 soundfile
+torchaudio
+
+# Deep Learning
+torch
+transformers
 numpy
-python-dotenv
+
+# Text-to-Speech
+gTTS
+
+# LLM
 google-generativeai
+
+# Configuration
+python-dotenv
+
+# Type hints
+pydantic
+
+# Database
+supabase

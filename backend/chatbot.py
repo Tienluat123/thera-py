@@ -24,7 +24,6 @@ model = genai.GenerativeModel(
     },
 )
 
-
 def chat_response(user_text, emotion):
     user_prompt = (
         f"Ngữ cảnh cảm xúc (ẩn, không được nhắc): {emotion}\n"
