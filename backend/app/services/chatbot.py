@@ -1,7 +1,11 @@
 import os
 import logging
+import warnings
 import google.generativeai as genai
 from app.config import settings
+
+# Suppress FutureWarning for deprecated google-generativeai
+warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +87,8 @@ class ChatbotService:
             response = chat.send_message(user_text)
 
             reply_text = (response.text or "").strip()
+
+            return reply_text if reply_text else "Xin lỗi, tôi chưa nghe rõ."
 
         except Exception as e:
             logger.error(f"Chatbot error: {e}")
