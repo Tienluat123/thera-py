@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { Navigation } from "../components";
 
 export function Login() {
   const navigate = useNavigate();
+
+  // Check if already logged in, redirect to chat
+  useEffect(() => {
+    const checkAuth = async () => {
+      let token = localStorage.getItem("auth_token");
+      if (!token) {
+        const { data } = await supabase.auth.getSession();
+        token = data?.session?.access_token || null;
+      }
+      if (token) {
+        navigate("/chat");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,14 +30,15 @@ export function Login() {
     setError("");
     setLoading(true);
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
       if (signInError) throw signInError;
       // Save access token for API calls
       const token = data?.session?.access_token;
-      if (token) localStorage.setItem('auth_token', token);
+      if (token) localStorage.setItem("auth_token", token);
       navigate("/chat");
     } catch (err) {
       setError(err.message || "Đăng nhập thất bại");
@@ -32,15 +49,7 @@ export function Login() {
 
   return (
     <div className="flex h-screen w-full bg-[#fdfcfd] overflow-hidden">
-      {/* Sidebar bên trái */}
-      <aside className="w-64 border-r border-gray-100 flex flex-col justify-between p-10 z-10 bg-white/50 backdrop-blur-md shrink-0">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
-            Thera.py
-          </h1>
-          
-        </div>
-      </aside>
+      <Navigation />
 
       {/* Main content area */}
       <main className="relative flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-blue-50 overflow-hidden p-4">
@@ -55,7 +64,10 @@ export function Login() {
           <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             {/* Title */}
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+              <h2
+                className="text-3xl font-bold text-gray-800 mb-2"
+                style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+              >
                 Đăng nhập
               </h2>
               <p className="text-gray-600 text-sm">

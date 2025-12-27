@@ -19,15 +19,20 @@ def save_message(
         raise ValueError("user_id is required to save a message")
 
     try:
-        return supabase.table("messages").insert(
-            {
-                "user_id": user_id,
-                "role": role,
-                "content": content,
-                "emotion": emotion,
-                "confidence": confidence,
-            }
-        ).execute()
+        # Build payload dynamically to avoid inserting NULLs into non-nullable columns
+        payload = {
+            "user_id": user_id,
+            "role": "assistant",
+            "content": content,
+        }
+
+        # Only include optional fields when they have values
+        if emotion is not None:
+            payload["emotion"] = emotion
+        if confidence is not None:
+            payload["confidence"] = confidence
+
+        return supabase.table("messages").insert(payload).execute()
     except Exception as exc:
         logger.error("Failed to save message to Supabase: %s", exc, exc_info=True)
         raise
