@@ -42,9 +42,8 @@ export function ChatPage() {
     const blob = audioRecorder.stopRecording();
     if (blob) setAudioBlob(blob);
   };
-
-  const handleSend = async () => {
-    let currentBlob = audioBlob;
+  const handleSend = async (providedBlob = null) => {
+    let currentBlob = providedBlob || audioBlob;
     if (audioRecorder.isRecording) {
       speechRecognition.stop();
       currentBlob = audioRecorder.stopRecording();
@@ -95,6 +94,29 @@ export function ChatPage() {
       setMicError("Lỗi kết nối: " + error.message);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleToggleRecording = async () => {
+    try {
+      if (!audioRecorder.isRecording) {
+        await handleStartRecording();
+        return;
+      }
+
+      // If recording, stop and immediately send
+      speechRecognition.stop();
+      const blob = audioRecorder.stopRecording();
+      if (!blob) {
+        setMicError("Vui lòng ghi âm trước khi gửi.");
+        return;
+      }
+      setAudioBlob(blob);
+      await new Promise((res) => setTimeout(res, 300));
+      await handleSend(blob);
+    } catch (err) {
+      console.error('Toggle recording error:', err);
+      setMicError(err.message || 'Lỗi khi ghi âm');
     }
   };
 
@@ -163,10 +185,7 @@ export function ChatPage() {
               <Controls
                 isRecording={audioRecorder.isRecording}
                 isProcessing={isProcessing}
-                audioBlob={audioBlob}
-                onStartRecording={handleStartRecording}
-                onStopRecording={handleStopRecording}
-                onSend={handleSend}
+                onToggleRecording={handleToggleRecording}
                 variant="float"
               />
               {micError && (
