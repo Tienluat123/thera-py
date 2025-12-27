@@ -18,6 +18,9 @@ gTTS
 # LLM
 google-generativeai
 
+# Database
+supabase
+
 # Configuration
 python-dotenv
 

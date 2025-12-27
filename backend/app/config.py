@@ -34,10 +34,18 @@ class Settings:
     AUDIO_CLEANUP_HOURS: int = 24
 
     # API Keys
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
 
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+
+    # Supabase Configuration
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
+    SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+
+    # Default user (for anonymous saves). Must exist in auth.users if foreign key is enforced.
+    DEFAULT_USER_ID: str | None = os.getenv("DEFAULT_USER_ID")
 
 
 settings = Settings()

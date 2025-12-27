@@ -3,9 +3,13 @@ Chatbot service using Google Generative AI (Gemini).
 """
 
 import os
+import warnings
 import google.generativeai as genai
 import logging
 from app.config import settings
+
+# Suppress deprecation warning for google.generativeai
+warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
 
 logger = logging.getLogger(__name__)
 
