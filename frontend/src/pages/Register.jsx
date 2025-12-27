@@ -42,47 +42,117 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-slate-800/70 border border-white/10 rounded-2xl p-6 shadow-xl">
-        <h1 className="text-2xl font-semibold mb-4">Đăng ký</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1">Email</label>
-            <input
-              type="email"
-              className="w-full rounded-md bg-slate-900 border border-white/10 px-3 py-2 focus:outline-none focus:border-emerald-400"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="flex h-screen w-full bg-[#fdfcfd] overflow-hidden">
+      {/* Sidebar bên trái */}
+      <aside className="w-64 border-r border-gray-100 flex flex-col justify-between p-10 z-10 bg-white/50 backdrop-blur-md shrink-0">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+            Thera.py
+          </h1>
+         
+        </div>
+        
+      </aside>
+
+      {/* Main content area */}
+      <main className="relative flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-purple-100 via-blue-100 to-purple-50 overflow-hidden p-4">
+        {/* Mesh gradient background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-white/20 blur-[100px]" />
+          <div className="absolute bottom-[-5%] right-[10%] w-[400px] h-[400px] rounded-full bg-white/10 blur-[120px]" />
+        </div>
+
+        {/* Form container */}
+        <div className="z-10 w-full max-w-md">
+          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
+            {/* Title */}
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+                Đăng ký
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Tạo tài khoản để bắt đầu trò chuyện
+              </p>
+            </div>
+
+            {/* Success message */}
+            {message && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                {message}
+              </div>
+            )}
+
+            {/* Error message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Email input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  required
+                />
+              </div>
+
+              {/* Password input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mật khẩu (tối thiểu 6 ký tự)
+                </label>
+                <input
+                  type="password"
+                  className="w-full rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  minLength={6}
+                  required
+                />
+              </div>
+
+              {/* Submit button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {loading ? "Đang đăng ký..." : "Đăng ký"}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="my-6 flex items-center">
+              <div className="flex-1 border-t border-gray-200"></div>
+              <span className="px-3 text-gray-500 text-sm">hoặc</span>
+              <div className="flex-1 border-t border-gray-200"></div>
+            </div>
+
+            {/* Login link */}
+            <p className="text-center text-gray-700">
+              Đã có tài khoản?{" "}
+              <Link
+                to="/login"
+                className="text-purple-500 font-semibold hover:text-purple-600 underline"
+              >
+                Đăng nhập
+              </Link>
+            </p>
           </div>
-          <div>
-            <label className="block text-sm mb-1">Mật khẩu</label>
-            <input
-              type="password"
-              className="w-full rounded-md bg-slate-900 border border-white/10 px-3 py-2 focus:outline-none focus:border-emerald-400"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="text-rose-300 text-sm">{error}</p>}
-          {message && <p className="text-emerald-300 text-sm">{message}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-md py-2 font-semibold disabled:opacity-70"
-          >
-            {loading ? "Đang đăng ký..." : "Đăng ký"}
-          </button>
-        </form>
-        <p className="text-sm text-slate-300 mt-4">
-          Đã có tài khoản?{" "}
-          <Link to="/login" className="text-emerald-300 hover:text-emerald-200">
-            Đăng nhập
-          </Link>
-        </p>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
+
