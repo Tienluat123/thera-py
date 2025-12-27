@@ -22,11 +22,11 @@ class Settings:
     EMOTION_LABELS: list = ["happy", "neutral", "sad", "angry"]
 
     WHISPER_MODEL: str = "small"
-    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
     # LLM config
     LLM_TEMPERATURE: float = 0.7
-    LLM_MAX_TOKENS: int = 200
+    LLM_MAX_TOKENS: int = 500
 
     # Audio config
     AUDIO_DIR: str = "audio"
