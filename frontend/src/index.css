@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Vietnamese font support */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1;
+    font-kerning: auto;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    font-kerning: auto;
+    letter-spacing: normal;
+    line-height: 1.5;
+  }
+
+  /* For serif font (like Playfair Display for headings) */
+  .font-serif {
+    font-family: 'Playfair Display', 'Georgia', serif;
+  }
+
+  /* Ensure proper spacing for all text elements */
+  p, span, div, a, button, h1, h2, h3, h4, h5, h6 {
+    font-feature-settings: 'kern' 1;
+    font-kerning: auto;
+    letter-spacing: normal;
+  }
+}
