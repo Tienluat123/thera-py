@@ -9,13 +9,19 @@ export function Login() {
   // Check if already logged in, redirect to chat
   useEffect(() => {
     const checkAuth = async () => {
-      let token = localStorage.getItem("auth_token");
-      if (!token) {
-        const { data } = await supabase.auth.getSession();
-        token = data?.session?.access_token || null;
-      }
+      // Only redirect if auth_token is in localStorage (user actively logged in)
+      const token = localStorage.getItem("auth_token");
       if (token) {
-        navigate("/chat");
+        // Verify token is still valid
+        try {
+          const { data } = await supabase.auth.getUser(token);
+          if (data.user) {
+            navigate("/chat");
+          }
+        } catch {
+          // Token invalid, stay on login
+          localStorage.removeItem("auth_token");
+        }
       }
     };
     checkAuth();

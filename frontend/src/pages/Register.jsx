@@ -38,23 +38,18 @@ export function Register() {
         password,
       });
       if (signUpError) throw signUpError;
-      setMessage(
-        "Đăng ký thành công, vui lòng kiểm tra email xác nhận (nếu có)."
-      );
-      // Optional: auto-login
-      const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-      if (signInError) throw signInError;
-      // Save access token for API calls
-      const token = data?.session?.access_token;
-      if (token) localStorage.setItem("auth_token", token);
-      navigate("/chat");
+
+      // Clear any session created by signUp and auth_token
+      await supabase.auth.signOut();
+      localStorage.removeItem("auth_token");
+
+      setMessage("Đăng ký thành công, vui lòng kiểm tra email xác nhận.");
+      // Redirect to login after a short delay to show success message
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (err) {
       setError(err.message || "Đăng ký thất bại");
-    } finally {
       setLoading(false);
     }
   };
