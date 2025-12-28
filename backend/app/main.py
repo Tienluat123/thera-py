@@ -20,19 +20,24 @@ logger.info("Starting app initialization...")
 
 try:
     from app.config import settings
+
     logger.info("✓ Config loaded")
 except Exception as e:
     logger.error(f"✗ Failed to load config: {e}")
     traceback.print_exc()
-    sys.exit(1)
+    settings = None
 
 try:
     from app.api.routes import router
+
     logger.info("✓ Routes loaded")
 except Exception as e:
     logger.error(f"✗ Failed to load routes: {e}")
     traceback.print_exc()
-    sys.exit(1)
+    # Create empty router if routes fail
+    from fastapi import APIRouter
+
+    router = APIRouter()
 
 # Create FastAPI app
 logger.info("Creating FastAPI app...")
