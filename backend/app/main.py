@@ -3,19 +3,39 @@ Main entry point for FastAPI application.
 """
 
 import logging
+import sys
+import traceback
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router
-from app.config import settings
 
-# Configure logging
+# Configure logging FIRST
 logging.basicConfig(
-    level=settings.LOG_LEVEL,
+    level="INFO",
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
+logger.info("Starting app initialization...")
+
+try:
+    from app.config import settings
+    logger.info("✓ Config loaded")
+except Exception as e:
+    logger.error(f"✗ Failed to load config: {e}")
+    traceback.print_exc()
+    sys.exit(1)
+
+try:
+    from app.api.routes import router
+    logger.info("✓ Routes loaded")
+except Exception as e:
+    logger.error(f"✗ Failed to load routes: {e}")
+    traceback.print_exc()
+    sys.exit(1)
+
 # Create FastAPI app
+logger.info("Creating FastAPI app...")
 app = FastAPI(
     title="Thera.py API",
     description="Chatbot API with emotion detection and text-to-speech",
@@ -55,6 +75,8 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
 
+
+logger.info("✓ App initialized successfully")
 
 if __name__ == "__main__":
     import uvicorn
