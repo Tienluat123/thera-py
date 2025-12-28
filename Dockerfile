@@ -17,20 +17,14 @@ WORKDIR /app
 # Copy Python packages từ builder
 COPY --from=builder /root/.local /root/.local
 
-# Copy app code
-COPY backend/app ./app
-
-# Copy only model files (không copy audio files)
-COPY backend/model/whisper.pt ./model/
-COPY backend/model/huhu.pt ./model/
-
-# Create audio directory (empty)
-RUN mkdir -p audio
+# Copy entire backend (app + config + everything)
+COPY backend ./
 
 # Set environment
 ENV PATH=/root/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
