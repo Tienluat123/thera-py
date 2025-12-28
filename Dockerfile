@@ -1,35 +1,31 @@
-# Multi-stage build để giảm kích thước Docker image
+# Build stage
 FROM python:3.10-slim as builder
 
-WORKDIR /app
+WORKDIR /build
 COPY backend/requirements-prod.txt .
 
-# Install dependencies with no cache
-RUN pip install --user --no-cache-dir -r requirements-prod.txt && \
-    # Clean pip cache
-    rm -rf /root/.cache/pip
+# Install dependencies to /build/.local
+RUN pip install --user --no-cache-dir -r requirements-prod.txt
 
-# Final image
+# Runtime stage
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# Copy Python packages từ builder
-COPY --from=builder /root/.local /root/.local
+# Copy Python packages
+COPY --from=builder /build/.local /root/.local
 
-# Copy entire backend (app + config + everything)
-COPY backend ./
+# Copy backend code
+COPY backend/ .
 
-# Set environment
+# Set PATH and environment
 ENV PATH=/root/.local/bin:$PATH \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONPATH=/app
+    PYTHONDONTWRITEBYTECODE=1
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/docs', timeout=5)" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Run
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-

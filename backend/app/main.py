@@ -1,6 +1,7 @@
 """
 FastAPI application entry point
 """
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,22 +20,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Basic endpoints
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "API is running"}
 
+
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
 
+
 # Try importing routes if possible
 try:
     from app.api.routes import router
+
     app.include_router(router)
 except Exception as e:
     print(f"Warning: Could not load routes: {e}")
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
